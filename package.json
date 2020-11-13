@@ -1,0 +1,21 @@
+{
+  "name": "online_tester",
+  "version": "0.1.1",
+  "description": "Narzędzie do porówywania swojego rozwiązania względem przygotowanych testów online",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adespawn/online_tester.git"
+  },
+  "author": "adespawn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adespawn/online_tester/issues"
+  },
+  "homepage": "https://github.com/adespawn/online_tester#readme"
+}
