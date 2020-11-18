@@ -1,12 +1,14 @@
 const core = require('./src/core.js');
 let settings;
 async function main() {
-    // console.log("A")
     settings =await core.init();
     if(settings==-1){
         return;
     }
-    console.log(settings)
-
+    const test_init = await core.init_tests()
+    if(test_init==-1){
+        return;
+    }
+    await core.init_threads()
 }
 main()

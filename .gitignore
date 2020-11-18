@@ -102,3 +102,13 @@ dist
 
 # TernJS port file
 .tern-port
+
+#runtime data
+testy/
+#program uczestnika
+user_program
+#ustawiena
+settings.json
+test_settings.json
+#należy samodzielnie skompilować
+src/compare
