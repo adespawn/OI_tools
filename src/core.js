@@ -6,14 +6,17 @@ const download = require('./download.js');
 const run = require('./run_program.js');
 let running_threads = 0, tasks_done = 0, correct = 0, wrong = 0, runned = 0
 const DEBUG = 0
-if(DEBUG!=0){
+if (DEBUG != 0) {
     console.log(`core.js (./src) in debug mode`)
 }
-let settings = new Map(), test_settings = new Map();
-let task_queue = [], wrong_tests=[];
+let settings = new Map(), test_settings = new Map(),times= new Map();
+let task_queue = [], wrong_tests = [],times_qu=[];
 function compareNumbers(a, b) {
     return a - b
- }
+}
+function comparePairs(a, b) {
+    return a[0] - b[0]
+}
 async function createPath(path, mask) {
     cb = function (err) {
         if (err) {
@@ -29,33 +32,39 @@ async function createPath(path, mask) {
     });
 }
 async function init_thread(id, settings) {
-    if(DEBUG!=0)console.log("thread_inicialized")
+    if (DEBUG != 0) console.log("thread_inicialized")
     let task;
     while (true) {
         task = await get_task();
         if (task == -1) {
             running_threads--
-            if(DEBUG!=0)console.log(`Thread ${id} finished, ${running_threads} remaining`)
-            if(running_threads==0){
+            if (DEBUG != 0) console.log(`Thread ${id} finished, ${running_threads} remaining`)
+            if (running_threads == 0) {
                 summary()
             }
-            
+
             return;
         }
         if (settings['download'] == true) await download.download_group(test_settings['url'], task, test_settings['prefix'], test_settings['in_ext'], test_settings['out_ext'], './testy/runtime')
         let command = `${settings['program']} <${settings['test_dir']}/in/${test_settings['prefix']}${task}${test_settings['in_ext']} > ${settings['test_dir']}/mout/${test_settings['prefix']}${task}${test_settings['out_ext']}`
-        await run.run(command, runned + 1)
+        if (settings['use_oiejq'] == true) {
+            let result =await run.time(command, task)
+            times[task]=result;
+            times_qu.push([result,task]);
+        } else {
+            await run.run(command, task)
+        }
         runned++
         if (DEBUG != 0) console.log(`${runned} tests hah been run`)
         const result = await compare.compare(`${settings['test_dir']}/mout/${test_settings['prefix']}${task}${test_settings['out_ext']}`, `${settings['test_dir']}/out/${test_settings['prefix']}${task}${test_settings['out_ext']}`, `${test_settings['prefix']}${task}`)
         if (DEBUG != 0) console.log(`thread ${id} working (${task})`)
         tasks_done++
-        if(tasks_done%settings['progres_update']==0){
+        if (tasks_done % settings['progres_update'] == 0) {
             console.log(`Skończono sparwdzać ${tasks_done} testów`)
         }
         if (result == 1) {
             correct++
-            if(DEBUG!=0)console.log(`correct (${correct} in total out of ${tasks_done})`)
+            if (DEBUG != 0) console.log(`correct (${correct} in total out of ${tasks_done})`)
         } else {
             wrong++
             wrong_tests.push(task)
@@ -64,21 +73,34 @@ async function init_thread(id, settings) {
         }
     }
 }
-function summary(){
+function summary() {
     console.log("Podsumowanie:\n===================================")
-    console.log(`${runned} wykonanych testów z czego\n${correct} poprawnych\n${correct/runned*100}% poprawności `)
-    if(wrong>0){
+    console.log(`${runned} wykonanych testów z czego\n${correct} poprawnych\n${correct / runned * 100}% poprawności `)
+    if (wrong > 0) {
+        console.log("===================================")
         console.log(`Lista niepoprawnych testów:`)
         wrong_tests.sort(compareNumbers)
-        for(let i=1;i<=Math.min(settings['wrong_skip'],wrong);i++){
+        for (let i = 1; i <= Math.min(settings['wrong_skip'], wrong); i++) {
             console.log(`Test nr ${wrong_tests.shift()}`)
         }
-        if(wrong>settings['wrong_skip']){
-            console.log(`Pomijam pozostałe ${wrong-settings['wrong_skip']} niepoprawnych testów`)
+        if (wrong > settings['wrong_skip']) {
+            console.log(`Pomijam pozostałe ${wrong - settings['wrong_skip']} niepoprawnych testów`)
             console.log(`Aby zmienić liczbę wypisywanych testów zmień wartość "wrong_skip" w ustawieniach`)
         }
     }
+    times_qu.sort(comparePairs).reverse()
+    console.log("===================================")
+    console.log("Najwyższe czasy:")
+    for (let i = 1; i <= Math.min(settings['wrong_skip'], runned); i++) {
+        let x=times_qu.shift()
+        console.log(`Test nr ${x[1]}: ${(x[0])/1000}s`)
+    }
+    fs_p.writeFile('./times.json', JSON.stringify(times,null,4), function (err) {
+        if (err)
+            return console.log('❌ ' + err);
+    });
     console.log(`Wszystkie wyjścia swojego programu znajdziesz w ${settings['test_dir']}/mout`)
+    console.log(`Wszystkie czasy działania programu zostały zapisane w pliku times.json (czasy podane w ms)`)
 }
 async function get_task() {
     task_queue.push(-1)
@@ -104,7 +126,7 @@ module.exports = {
         }
         try {
             let dirs = ['./testy', './testy/runtime', './testy/niepoprawne/', './testy/runtime/in', './testy/runtime/out', './testy/runtime/mout',
-                './testy/niepoprawne/in', './testy/niepoprawne/out', './testy/niepoprawne/mout',`${settings['test_dir']}/mout`]
+                './testy/niepoprawne/in', './testy/niepoprawne/out', './testy/niepoprawne/mout', `${settings['test_dir']}/mout`]
             for (let i = 0; i < dirs.length; i++) {
                 await createPath(dirs[i]);
                 await new Promise(resolve => setTimeout(resolve, 10));
@@ -148,10 +170,10 @@ module.exports = {
         for (let i = 1; i <= test_settings['quantity']; i++) {
             task_queue.push(i)
         }
-        if(settings['download']==true)
-        if (test_settings['url'][test_settings['url'].length - 1] == "/") {
-            test_settings['url'] = test_settings['url'].substring(0, test_settings['url'].length - 1)
-        }
+        if (settings['download'] == true)
+            if (test_settings['url'][test_settings['url'].length - 1] == "/") {
+                test_settings['url'] = test_settings['url'].substring(0, test_settings['url'].length - 1)
+            }
     },
     init_threads: async function () {
         for (var i = 0; i < settings['threads']; i++) {

@@ -17,6 +17,12 @@ module.exports = {
     },
     time: async function (command, test) {
         try {
+            if(DEBUG!=0)console.log(`${test} started`)
+            const  stdout  = await execFile(`./src/oiejq.sh ${command}`);
+            let time =Number(stdout['stderr'].split('Time: ')[1].split('ms')[0])
+            if(DEBUG!=0)console.log("time: ",time,"ms")
+            if(DEBUG!=0)console.log(`${test} ended`)
+            return time;
         }
         catch (e) {
             console.log(`Cannot launch program for test ${test}:\n${e}`)

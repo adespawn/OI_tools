@@ -112,3 +112,4 @@ settings.json
 test_settings.json
 #należy samodzielnie skompilować
 src/compare
+times.json
