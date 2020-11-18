@@ -9,8 +9,8 @@ const DEBUG = 0
 if (DEBUG != 0) {
     console.log(`core.js (./src) in debug mode`)
 }
-let settings = new Map(), test_settings = new Map(),times= new Map();
-let task_queue = [], wrong_tests = [],times_qu=[];
+let settings = new Map(), test_settings = new Map(), times = new Map();
+let task_queue = [], wrong_tests = [], times_qu = [];
 function compareNumbers(a, b) {
     return a - b
 }
@@ -48,9 +48,9 @@ async function init_thread(id, settings) {
         if (settings['download'] == true) await download.download_group(test_settings['url'], task, test_settings['prefix'], test_settings['in_ext'], test_settings['out_ext'], './testy/runtime')
         let command = `${settings['program']} <${settings['test_dir']}/in/${test_settings['prefix']}${task}${test_settings['in_ext']} > ${settings['test_dir']}/mout/${test_settings['prefix']}${task}${test_settings['out_ext']}`
         if (settings['use_oiejq'] == true) {
-            let result =await run.time(command, task)
-            times[task]=result;
-            times_qu.push([result,task]);
+            let result = await run.time(command, task)
+            times[task] = result;
+            times_qu.push([result, task]);
         } else {
             await run.run(command, task)
         }
@@ -90,17 +90,19 @@ function summary() {
     }
     times_qu.sort(comparePairs).reverse()
     console.log("===================================")
-    console.log("Najwyższe czasy:")
-    for (let i = 1; i <= Math.min(settings['wrong_skip'], runned); i++) {
-        let x=times_qu.shift()
-        console.log(`Test nr ${x[1]}: ${(x[0])/1000}s`)
+    if (settings['use_oiejq']) {
+        console.log("Najwyższe czasy:")
+        for (let i = 1; i <= Math.min(settings['wrong_skip'], runned); i++) {
+            let x = times_qu.shift()
+            console.log(`Test nr ${x[1]}: ${(x[0]) / 1000}s`)
+        }
+        fs_p.writeFile('./times.json', JSON.stringify(times, null, 4), function (err) {
+            if (err)
+                return console.log('❌ ' + err);
+        });
     }
-    fs_p.writeFile('./times.json', JSON.stringify(times,null,4), function (err) {
-        if (err)
-            return console.log('❌ ' + err);
-    });
     console.log(`Wszystkie wyjścia swojego programu znajdziesz w ${settings['test_dir']}/mout`)
-    console.log(`Wszystkie czasy działania programu zostały zapisane w pliku times.json (czasy podane w ms)`)
+    if (settings['use_oiejq']) console.log(`Wszystkie czasy działania programu zostały zapisane w pliku times.json (czasy podane w ms)`)
 }
 async function get_task() {
     task_queue.push(-1)
