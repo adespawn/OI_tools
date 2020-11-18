@@ -2,7 +2,7 @@
 module.exports ={
     settings:`{       "_program_description":"program który będzie wykonywał rozwiązanie",
     "program":"user_program/a",
-    "_threads_description":"liczba wątków w których ma działać program sprawdzający. Ustawić najlepiej na 1.5x liczbą wątków procesora ",
+    "_threads_description":"liczba wątków w których ma działać program sprawdzający. w przypadku jeżeli 'download' jest ustawione na true ustawić najlepiej na 1.5x liczbą wątków procesora  ",
     "threads": 12,
     "_download_description":"Czy program sprawdzający ma pobierać testy z zewnętrznego serwera (true), czy ma korzystać z lokalnych testów (false)[work in progres]",
     "download":false,

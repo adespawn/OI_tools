@@ -21,7 +21,6 @@ async function createPath(path, mask) {
         }
     }
     mask = 0744
-
     await fs.mkdir(path, mask, function (err) {
         if (err) {
             if (err.code == 'EEXIST') cb(null);
@@ -90,17 +89,6 @@ module.exports = {
     init: async function () {
         let data;
         try {
-            let dirs = ['./testy', './testy/runtime', './testy/niepoprawne/', './testy/runtime/in', './testy/runtime/out', './testy/runtime/mout',
-                './testy/niepoprawne/in', './testy/niepoprawne/out', './testy/niepoprawne/mout']
-            for (let i = 0; i < dirs.length; i++) {
-                await createPath(dirs[i]);
-                await new Promise(resolve => setTimeout(resolve, 10));
-            }
-        } catch (e) {
-            console.log("Wystąpił błąd:")
-            console.log(e)
-        }
-        try {
             const a = await fs_p.readFile("settings.json", "utf8")
             data = JSON.parse(a);
             settings = data;
@@ -114,7 +102,17 @@ module.exports = {
             console.log('⚠️  Stworzono plik ustawień, zmodyfikuj ustawienia do włassnych potezeb i uruchom ponownie');
             return -1;
         }
-
+        try {
+            let dirs = ['./testy', './testy/runtime', './testy/niepoprawne/', './testy/runtime/in', './testy/runtime/out', './testy/runtime/mout',
+                './testy/niepoprawne/in', './testy/niepoprawne/out', './testy/niepoprawne/mout',`${settings['test_dir']}/mout`]
+            for (let i = 0; i < dirs.length; i++) {
+                await createPath(dirs[i]);
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+        } catch (e) {
+            console.log("Wystąpił błąd:")
+            console.log(e)
+        }
         if (settings['threads'] < 0) {
             console.log('Nie podano poprawnej wartości dla "threads", ustawiam na 1')
             settings['threads'] = 1
