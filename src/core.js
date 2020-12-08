@@ -73,7 +73,8 @@ async function init_thread(id, settings) {
         }
     }
 }
-function summary() {
+async function summary() {
+    run.revoke_perms(settings['test_dir']+'/mout',true)
     console.log("Podsumowanie:\n===================================")
     console.log(`${runned} wykonanych testów z czego\n${correct} poprawnych\n${correct / runned * 100}% poprawności `)
     if (wrong > 0) {
@@ -99,7 +100,10 @@ function summary() {
         fs_p.writeFile('./times.json', JSON.stringify(times, null, 4), function (err) {
             if (err)
                 return console.log('❌ ' + err);
-        });
+            
+        }).then(
+            run.revoke_perms('times.json')
+        );
     }
     console.log(`Wszystkie wyjścia swojego programu znajdziesz w ${settings['test_dir']}/mout`)
     if (settings['use_oiejq']) console.log(`Wszystkie czasy działania programu zostały zapisane w pliku times.json (czasy podane w ms)`)

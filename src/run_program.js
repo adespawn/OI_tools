@@ -27,5 +27,12 @@ module.exports = {
         catch (e) {
             console.log(`Cannot launch program for test ${test}:\n${e}`)
         }
+    },
+    revoke_perms: async function (dir,is_dir){
+        const  stdout  = await execFile(`whoami`);
+        if(stdout.stdout=='root'||stdout.stdout=='root\n'){
+            let command=`chmod 766${(is_dir)?' -R':''} ${dir}`
+            await execFile(command)
+        }
     }
 }
