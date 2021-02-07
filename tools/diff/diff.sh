@@ -12,4 +12,7 @@ if [ -z "$4" ]; then
     th=$4
 fi
 echo "Rozpoczynam ${th} wątki"
-gnome-terminal -- ./thread $$ $th
+for i in $(bash -c "echo {1..${4}}"); do
+
+gnome-terminal -- ./thread $$ $th $i
+done
