@@ -113,3 +113,7 @@ test_settings.json
 #należy samodzielnie skompilować
 src/compare
 times.json
+tools/diff/usrSrc/
+tools/diff/bin/
+tools/diff/log/
+tools/diff/out/
