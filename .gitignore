@@ -117,3 +117,4 @@ tools/diff/usrSrc/
 tools/diff/bin/
 tools/diff/log/
 tools/diff/out/
+.idea/
