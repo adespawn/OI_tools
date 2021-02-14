@@ -126,3 +126,4 @@ tools/tester/src/compare
 
 .vscode
 tools/diff/thread
+tools/generators/graf

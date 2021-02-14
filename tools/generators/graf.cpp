@@ -29,7 +29,7 @@ int main(const int argc, const char **argv){
     }
     srand(tid);
 
-
+    // Wczytwanie wielkości drzewa
     int zap;
     cin>>zap;
     getTree(zap);
