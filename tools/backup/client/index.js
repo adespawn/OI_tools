@@ -32,8 +32,8 @@ function fend(){
 fs.readFile(dir, 'utf8', function (err, data) {
     if (err) console.log("err", err)
     // console.log(data)
-    let url = `http://${server}`
-    // console.log(url)
+    let url = `${server}`
+    console.log(url)
     let rdata=new Map;
     rdata.body=data
     rdata.filename=file
@@ -41,8 +41,8 @@ fs.readFile(dir, 'utf8', function (err, data) {
     bf=Buffer(jsond)
     // console.log(bf.toString('base64'))
      options = {
-        uri: url,
-        port: 8080,
+        host: url,
+        port:8080,
         json: false,
         method: 'POST',
         href: '',
