@@ -4,18 +4,28 @@ const moment = require('moment')
 const fs = require('fs')
 
 const app = express()
+const http = require('http')
 const port = 8080
 
 
-app.get('/', function (req, res) {
-    res.send("{\"succes\":1}")
-    let q = req.query
-    let filename=`[${moment().format().split('T').join('_').split('+')[0]}]_`+q.filename+".bp";
-    fs.writeFile(`./backups/${filename}`, q.body, function (err) {
-        if (err) return console.log(err);
-        else console.log(`[${moment().format()}] Zapisano ${filename}`);
+http.createServer((request, response) => {
+    const { headers, method, url } = request;
+    let body = [];
+    request.on('error', (err) => {
+        console.error(err);
+    }).on('data', (chunk) => {
+        body.push(chunk);
+    }).on('end', () => {
+        body = Buffer.concat(body).toString();
+        let buff = Buffer(body, 'base64');
+        let q = JSON.parse( buff.toString('utf-8'));
+        let filename = `[${moment().format().split('T').join('_').split('+')[0]}]_` + q.filename + ".bp";
+        fs.writeFile(`./backups/${filename}`, q.body, function (err) {
+            if (err) return console.log(err);
+            else console.log(`[${moment().format()}] Zapisano ${filename}`);
+            response.write(`{"succes":1}`)
+            response.end()
+        });
     });
-})
-app.listen(port, () => {
-    console.log(`Backup server listening at http://localhost:${port}`)
-})
+
+}).listen(8080);

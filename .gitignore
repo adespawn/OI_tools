@@ -128,3 +128,4 @@ tools/tester/src/compare
 tools/diff/thread
 tools/generators/graf
 tools/backup/server/backups/*
+tools/compiler++/a.cpp

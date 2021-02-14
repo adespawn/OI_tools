@@ -9,7 +9,11 @@
   "author": "adespawn",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.1",
+    "content-disposition": "^0.5.3",
     "express": "^4.17.1",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
     "moment": "^2.29.1"
   }
 }
