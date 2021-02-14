@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/adespawn/online_tester#readme",
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "request": "^2.88.2"
   }
 }
