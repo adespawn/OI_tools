@@ -1,3 +1,4 @@
+#czyszczenie wszystich wyjść
 cd bin
 rm *
 cd ../out
