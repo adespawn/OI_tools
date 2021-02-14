@@ -8,15 +8,15 @@ module.exports ={
     "download":false,
     "_test_dir_description":"Ścieżka do testów jeżeli w 'download' zaznaczono false, w przeciwnym wypadku progrm ignoruje tą wartość. Dana ścieżka powinna zawierać foldery in i out z testami",
     "test_dir":"./testy/runtime",
-    "_use_oiejq_description":"Czy używać oiejq (jest dołaczone do projektu- nie wymaga dodadkowej instalacji) do mieżenia czasu działania programu",
+    "_use_oiejq_description":"Czy używać oiejq do mieżenia czasu działania programu, wymagane uruchomienie z sudo",
     "use_oiejq":false,
     "wrong_skip":10,
     "_progres_update_description":"Co ile ukończonych testów program powinien informować o postępie",
     "progres_update":100
 }`,
 test_settings:`{
-    "quantity":600,
-    "prefix":"cuk",
+    "quantity":1,
+    "prefix":"zad",
     "in_ext":".in",
     "out_ext":".out"
 }`
