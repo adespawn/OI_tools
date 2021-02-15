@@ -12,4 +12,8 @@ w folderze
 w terminalu należy wywołać komendę 
 ``c programDoKompilacji.cpp``
 dany program zostanie automtycznie skompilowany a następnie uruchomiony. Po zakończonej kompilacji wyświetli się informaja o sukcesie, lub błędach w przypadku nieskutecznej kompilacji
-
+### Dodatkow flagi:
+- -h / --help : wyświetla pomoc
+- -l : umieszcza skompilowany program w tym samym folderze co kompilowany kod
+- -nf : kompiluje bez dodatkowych flag
+- -nb : nie robi backapu (https://github.com/adespawn/OI_tools/tree/main/tools/backup)
