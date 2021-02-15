@@ -24,7 +24,7 @@ const fs = require('fs');
 const { exit } = require('process');
 const request = require('request');
 const http = require('http')
-let file = process.argv[2]
+let file = process.argv[2].replace(/^.*[\\\/]/, '')
 let dir = process.argv[3]
 function fend(){
     exit();
