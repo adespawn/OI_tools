@@ -129,3 +129,6 @@ tools/diff/thread
 tools/generators/graf
 tools/backup/server/backups/*
 tools/compiler++/a.cpp
+tools/testGenerator/paczki
+tools/testGenerator/bin
+tools/testGenerator/usrSrc
