@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+from memory_profiler import memory_usage
+import subprocess as sb
+import sys
+import os
+import threading
+import select
+
+input=sys.stdin
+
+
+if len(sys.argv)<=1:
+    print("Nie podano programu")
+    exit()
+
+elf = sys.argv[1]
+
+
+if select.select([sys.stdin,],[],[],0.0)[0]:
+    input=input.read()
+else:
+    print("Stdin jest pusty, co oznacza że testowany program nie dostanie żadnego wejścia")
+    print("Jeżeli program obsługuje wejście to będzie czekał w nieskończoność")
+    print("Jeśli chcesz dodać input użyj znaku < np. ./memcheck < input.txt")
+    input=""
+    
+def w8(proc):
+    proc.wait()
+
+
+#if len(input)==0:
+#    print("Stdin jest pusty, co oznacza że testowany program nie dostanie żadnego wejścia")
+#    print("Jeśli chcesz dodać input użyj znaku < np. ./memcheck < input.txt")
+stdin = open('tmp','w+')
+proc = sb.Popen(f'./{elf}',stdin=stdin)
+
+
+#f=open(f'/proc/{proc.pid}/fd/0','a')
+
+stdin.write(input)
+stdin.close()
+
+x = threading.Thread(target=w8,args=[proc])
+x.start()
+
+
+print("Measuring memory")
+
+null = open(os.devnull,'wb')
+sb.call(['mprof','run','-T','0.05','-a',str(proc.pid)] ,stdout=null,stderr=null)
+
+print("Ploting")
+os.system("mprof plot")
+os.system('mprof clean')
+os.system('rm tmp')
