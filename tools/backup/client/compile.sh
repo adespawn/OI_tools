@@ -4,7 +4,7 @@ rm -r -d ~/.local/bin/bkpCli
 npm i
 cp ./index.js ~/.local/lib/bkpCli
 cp ./backup ~/.local/bin/backup
-cp ./defaultSettings.json ~/.local/lib/bkpCli/settings.json
+cp ./settings.json ~/.local/lib/bkpCli/settings.json
 chmod +x ~/.local/bin/backup
 cp ./package-lock.json ~/.local/lib/bkpCli
 cp ./package.json ~/.local/lib/bkpCli

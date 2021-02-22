@@ -114,6 +114,8 @@ tools/diff/usrSrc/
 #ustawiena
 tools/tester/settings.json
 tools/tester/test_settings.json
+tools/backup/client/settings.json
+tools/backup/server/settings.json
 
 #należy samodzielnie skompilować
 tools/tester/src/compare
@@ -132,4 +134,4 @@ tools/compiler++/a.cpp
 tools/testGenerator/paczki
 tools/testGenerator/bin
 tools/testGenerator/usrSrc
-tools/backup/client/defaultSettings.json
+
