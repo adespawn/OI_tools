@@ -135,3 +135,6 @@ tools/testGenerator/paczki
 tools/testGenerator/bin
 tools/testGenerator/usrSrc
 
+tools/backup/server/PUB.key
+tools/backup/server/PRIV.key
+tools/backup/client/PUB.key
