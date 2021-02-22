@@ -132,3 +132,4 @@ tools/compiler++/a.cpp
 tools/testGenerator/paczki
 tools/testGenerator/bin
 tools/testGenerator/usrSrc
+tools/backup/client/defaultSettings.json

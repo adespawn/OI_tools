@@ -1,1 +1,0 @@
-node ~/.local/bin/bkpCli/index.js $1 $1

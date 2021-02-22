@@ -58,7 +58,7 @@ if [ -r "$1" ]; then
     done
     #kompilacja
     if [ $bp = "true" ]; then
-    gnome-terminal -- node ~/.local/bin/bkpCli/index.js ${mydir}_$1 $PWD/$1
+    gnome-terminal -- node ~/.local/lib/bkpCli/index.js ${mydir}_$1 $file
     fi
     g++ $flags $file -o $outdir
     errc=$?

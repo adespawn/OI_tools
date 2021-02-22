@@ -9,8 +9,9 @@
   "author": "adespawn",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "fs": "0.0.1-security",
-    "process": "^0.11.10",
-    "request": "^2.88.2"
+    "http": "0.0.1-security",
+    "process": "^0.11.10"
   }
 }

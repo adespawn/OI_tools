@@ -1,9 +1,11 @@
 user=`whoami`
-mkdir -p ~/.local/bin/bkpCli
+mkdir -p ~/.local/lib/bkpCli
+rm -r -d ~/.local/bin/bkpCli
 npm i
-cp ./index.js ~/.local/bin/bkpCli
-cp ./backup.sh ~/.local/bin/backup
+cp ./index.js ~/.local/lib/bkpCli
+cp ./backup ~/.local/bin/backup
+cp ./defaultSettings.json ~/.local/lib/bkpCli/settings.json
 chmod +x ~/.local/bin/backup
-cp ./package-lock.json ~/.local/bin/bkpCli
-cp ./package.json ~/.local/bin/bkpCli
-cp -r ./node_modules ~/.local/bin/bkpCli
+cp ./package-lock.json ~/.local/lib/bkpCli
+cp ./package.json ~/.local/lib/bkpCli
+cp -r ./node_modules ~/.local/lib/bkpCli
