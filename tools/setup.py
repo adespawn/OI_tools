@@ -15,7 +15,7 @@ while 1:
         ui.info_2('Zainstalowano - od teraz można w terminalu uzyć komendy c [nazwaprogramu]')
     if out=='backup-client':
         ui.info_2('installing')
-        os.system(f'bash -c "cd  { os.path.dirname(os.path.abspath(__file__))  }/backup/client && source npm i"')
+        os.system(f'bash -c "cd  { os.path.dirname(os.path.abspath(__file__))  }/backup/client"')
         ip=ui.ask_string('podaj ip serwera backupowego, dla lokalnego wpisz 127.0.0.1')
         port = ui.ask_string('podaj port serwera backupowego')
         pswd = ui.ask_password('podaj haslo do serwera backupowego (ustawisz je przy instalacji serwera)')
