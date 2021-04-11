@@ -22,7 +22,7 @@ if [ "$1" = "-h" ] || [ "$1" == "--help" ]; then
     return 0
 fi
 if [ -r "$1" ]; then
-    wd=$cache/data/$PWD/$1
+    wd="$cache/data$PWD/$1"
     mkdir -p $wd
     cp -r $1 $wd/$1
     #backup kompilowanego pliku
@@ -31,7 +31,9 @@ if [ -r "$1" ]; then
     f1=$1
     file=$wd/$1
     bp="true"
-    flags="-Wall -Wextra -pedantic -std=c++17 -O2 -Wshadow -Wformat=2 -Wfloat-equal -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fsanitize=address -fsanitize=undefined -fno-sanitize-recover -fstack-protector"
+    #flags="-Wall -Wextra -pedantic -std=c++17 -O2 -Wshadow -Wformat=2 -Wfloat-equal -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fsanitize=address -fsanitize=undefined -fno-sanitize-recover -fstack-protector"
+    flags="-std=c++17"
+    uinp="."
     #progrm flags handling
     while test $# -gt 0; do
         case "$1" in
@@ -39,8 +41,8 @@ if [ -r "$1" ]; then
             help
             return 0
             ;;
-        -nf)
-            flags="-std=c++17"
+        -f)
+            flags="-Wall -Wextra -pedantic -std=c++17 -O2 -Wformat=2 -Wfloat-equal -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fsanitize=address -fsanitize=undefined -fno-sanitize-recover -fstack-protector"
             shift
             ;;
         -l)
@@ -51,6 +53,12 @@ if [ -r "$1" ]; then
             bp="false"
             shift
             ;;
+        -t)
+            shift
+            outdir="./${f1%.*}"
+            uinp="./${1}"
+            shift
+            ;;
         *)
             shift
             ;;
@@ -58,7 +66,7 @@ if [ -r "$1" ]; then
     done
     #kompilacja
     if [ $bp = "true" ]; then
-    gnome-terminal -- node ~/.local/lib/bkpCli/index.js ${mydir}_$1 $file
+    gnome-terminal -- backup $file
     fi
     g++ $flags $file -o $outdir
     errc=$?
@@ -72,6 +80,10 @@ if [ -r "$1" ]; then
         return 1
     fi
     #wykonanie pliku
+    if [ $uinp = "." ]; then
     $outdir
+    else
+    $outdir <$uinp
+    fi
 
 fi
