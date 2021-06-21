@@ -138,3 +138,5 @@ tools/testGenerator/usrSrc
 tools/backup/server/PUB.key
 tools/backup/server/PRIV.key
 tools/backup/client/PUB.key
+tools/project/1/
+tools/project/2/

@@ -1,3 +1,4 @@
+#!/bin/bash
 help() {
     echo "Usage: c file [OPTIONS]"
     echo ""
