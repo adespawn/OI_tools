@@ -22,7 +22,7 @@ fs.readFile(KEY, 'utf8', function (err, key) {
         fs.readFile(dir, 'utf8', function (err, data) {
             if (err) console.log("err", err)
             let url = `${set.server}`
-            console.log(url)
+            console.log(`${url}:${set.port}`)
             let rdata = new Map;
             rdata.body = data
             rdata.filename = file

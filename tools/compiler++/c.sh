@@ -67,7 +67,7 @@ if [ -r "$1" ]; then
     done
     #kompilacja
     if [ $bp = "true" ]; then
-    gnome-terminal -- backup $file
+    backup $file >/tmp/a &
     fi
     g++ $flags $file -o $outdir
     errc=$?

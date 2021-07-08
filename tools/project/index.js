@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+let usrname="adespawn"
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const randomstring = require("randomstring");
@@ -6,6 +7,14 @@ const { error } = require('console');
 const fs = require('fs');
 const { prSettings, projErr } = require('./src/data');
 let flags = new Map()
+
+process.on('SIGINT', function () {
+    console.log("Caught interrupt signal");
+
+    if (false)
+        process.exit();
+});
+
 function ask(query) {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -53,7 +62,7 @@ async function compile(path) {
     if (isSet("-f")) {
         cmpF = "-Wall -Wextra -pedantic -std=c++17 -O2 -Wformat=2 -Wfloat-equal -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -D_FORTIFY_SOURCE=2 -fsanitize=address -fsanitize=undefined -fno-sanitize-recover -fstack-protector"
     }
-    const { stdout, stderr } = await exec(`g++ ${path} -o ${outDir} ${cmpF}`)
+    const { stdout, stderr } = await exec(`g++ -O3 -static ${path} -o ${outDir} ${cmpF}`)
     if (stderr.length > 0) throw (stderr)
     return outDir
 }
@@ -70,14 +79,23 @@ async function isProjectDir() {
 
 async function runSingleTest(testDir, binaryDir, code) {
 
-    const { stdout, stderr } = await exec(`./${binaryDir} <tests/in/${testDir} >tmp/${testDir}_${code}.out`)
-    if (stderr.length > 0) throw (stderr)
-    const { cmpout, cmperr } = await exec(`comp tests/out/${testDir.split('.in')[0] + ".out"} tmp/${testDir}_${code}.out >tmp/${testDir}_${code}.log ${testDir}`)
+    let cmd=`./${binaryDir} <tests/in/${testDir} >tmp/${testDir}_${code}.out`
+    if (isSet("-t")) {
+        
+        cmd=`/home/${usrname}/.local/bin/src/oiejq.sh ./${binaryDir} <tests/in/${testDir} >tmp/${testDir}_${code}.out`
+    }
+    const{ stdout, stderr } = await exec(cmd);
+    
+    let insc=0;
+    if (isSet("-t")) {
+        insc =Number(stderr.split('Time: ')[1].split('ms')[0])
+    }
+    const { cmpout, cmperr } = await exec(`/home/${usrname}/.local/bin/src/comp tests/out/${testDir.split('.in')[0] + ".out"} tmp/${testDir}_${code}.out >tmp/${testDir}_${code}.log ${testDir}`)
     let diff = fs.readFileSync(`tmp/${testDir}_${code}.log`)
     if (diff != null && diff != undefined && diff.length > 0) {
-        return [-1, diff + ""];
+        return [-1, diff + "",insc];
     } else {
-        return [0, ""]
+        return [0, "",insc]
     }
 }
 
@@ -91,15 +109,15 @@ async function testProgram(name) {
         let tests = fs.readdirSync("./tests/in")
         let code = randomstring.generate(5)
         for (file of tests) {
-            let res=await runSingleTest(file, binary, code)
-            if(res[0]!=0){
-                console.log(`❌ TEST ${file} ❌\n${res[1]}`)
-                if(isSet("-s")){
+            let res = await runSingleTest(file, binary, code)
+            if (res[0] != 0) {
+                console.log(`❌ TEST ${file} ❌${isSet("-t")?res[2]/1000+"s":""}\n${res[1]}`)
+                if (isSet("-s")) {
                     console.log("WRONG ANWSER (-s) EXITING")
                     return
                 }
-            }else{
-                console.log(`✅ OK. ${file}`)
+            } else {
+                console.log(`✅ OK. ${file} ${isSet("-t")?res[2]/1000+"s":""}`)
             }
         }
 
@@ -151,8 +169,7 @@ async function runTestsInit(name) {
     }
     else {
         try {
-            let res = await testProgram(file)
-            console.log(res)
+            await testProgram(file)
         } catch (e) {
             switch (e.code) {
                 case 0:
@@ -163,8 +180,8 @@ async function runTestsInit(name) {
     }
 
 }
-async function cleanTMP(){
-    if(isProjectDir()){
+async function cleanTMP() {
+    if (isProjectDir()) {
         await exec("rm ./tmp/*")
         console.log("DONE")
     }
@@ -202,7 +219,7 @@ switch (process.argv[2]) {
         break;
     case "clean":
         cleanTMP()
-    break;
+        break;
     default:
         console.log("Invalit arguments")
         break;
