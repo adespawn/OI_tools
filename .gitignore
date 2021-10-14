@@ -111,9 +111,6 @@ tools/diff/log/
 tools/diff/out/
 #program uczestnika
 tools/diff/usrSrc/
-#ustawiena
-tools/tester/settings.json
-tools/tester/test_settings.json
 tools/backup/client/settings.json
 tools/backup/server/settings.json
 
@@ -144,4 +141,4 @@ tools/NCDiff/usrSrc/a.cpp
 tools/NCDiff/usrSrc/b.cpp
 tools/NCDiff/usrSrc/c.cpp
 tools/NCDiff/usrSrc/d.cpp
-tools/tester/TDR
+tools/tester/a.out
