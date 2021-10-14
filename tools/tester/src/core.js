@@ -1,16 +1,20 @@
 const fs_p = require('fs').promises;
 const fs = require('fs');
+const os = require('os');
+const sudo = require('sudo-prompt');
 const compare = require('./compare.js');
 const default_settings = require('./default_settings.js')
 const download = require('./download.js');
 const run = require('./run_program.js');
+
 let running_threads = 0, tasks_done = 0, correct = 0, wrong = 0, runned = 0
 const DEBUG = 0
 if (DEBUG != 0) {
     console.log(`core.js (./src) in debug mode`)
 }
-let settings = new Map(), test_settings = new Map(), times = new Map();
+let settings = new Map(), test_settings = new Map(), times = new Map(), flags = new Map();
 let task_queue = [], wrong_tests = [], times_qu = [];
+
 function compareNumbers(a, b) {
     return a - b
 }
@@ -74,8 +78,8 @@ async function init_thread(id, settings) {
     }
 }
 async function summary() {
-    run.revoke_perms(settings['test_dir']+'/mout',true)
-    console.log("Podsumowanie:\n===================================")
+    run.revoke_perms(settings['test_dir'] + '/mout', true)
+    console.log("\n\nPodsumowanie:\n===================================")
     console.log(`${runned} wykonanych testów z czego\n${correct} poprawnych\n${correct / runned * 100}% poprawności `)
     if (wrong > 0) {
         console.log("===================================")
@@ -90,7 +94,7 @@ async function summary() {
         }
     }
     times_qu.sort(comparePairs).reverse()
-    console.log("===================================")
+    console.log("===================================\n")
     if (settings['use_oiejq']) {
         console.log("Najwyższe czasy:")
         for (let i = 1; i <= Math.min(settings['wrong_skip'], runned); i++) {
@@ -100,10 +104,11 @@ async function summary() {
         fs_p.writeFile('./times.json', JSON.stringify(times, null, 4), function (err) {
             if (err)
                 return console.log('❌ ' + err);
-            
+
         }).then(
             run.revoke_perms('times.json')
         );
+        console.log();
     }
     console.log(`Wszystkie wyjścia swojego programu znajdziesz w ${settings['test_dir']}/mout`)
     if (settings['use_oiejq']) console.log(`Wszystkie czasy działania programu zostały zapisane w pliku times.json (czasy podane w ms)`)
@@ -112,27 +117,99 @@ async function get_task() {
     task_queue.push(-1)
     return task_queue.shift()
 }
+function parseFlags(stID) {
+    for (let i = parseInt(stID); i < process.argv.length; i++) {
+        flags[process.argv[i]] = (i != process.argv.length - 1) ? process.argv[i + 1] : 1;
+        if (DEBUG) console.log(process.argv[i]);
+    }
+}
 module.exports = {
     name: "core",
     init: async function () {
         let data;
+        parseFlags(2);
         try {
-            const a = await fs_p.readFile("settings.json", "utf8")
+            const a = await fs_p.readFile(`/var/tester/settings.json`, "utf8")
             data = JSON.parse(a);
             settings = data;
         }
         catch (e) {
             if (DEBUG != 0) console.log(e)
-            fs_p.writeFile('./settings.json', default_settings.settings, function (err) {
-                if (err)
-                    return console.log('❌ ' + err);
-            });
-            console.log('⚠️  Stworzono plik ustawień, zmodyfikuj ustawienia do włassnych potezeb i uruchom ponownie');
+            try {
+                await fs_p.writeFile(`/var/tester/settings.json`, default_settings.settings);
+                console.log('⚠️ Stworzono plik ustawień, zmodyfikuj ustawienia do włassnych potezeb i uruchom ponownie');
+                return -1;
+            }
+            catch (e) {
+                if (DEBUG != 0) console.log(e)
+            }
+        }
+        if (settings['threads'] < 0) {
+            console.log('Nie podano poprawnej wartości dla "threads", ustawiam na 1')
+            settings['threads'] = 1
+        }
+        if (settings['threads'] > os.cpus().length) {
+            console.log(`Liczba wątków większa, zmniejszam do ${os.cpus().length}`)
+            settings['threads'] = os.cpus().length;
+        }
+        if (settings['program'] == undefined) {
+            console.log(`Niepoprawna wartość dla "program", zatrzymuję sprawdzarkę!`)
             return -1;
         }
+        if (settings['download'] == true) {
+            settings['test_dir'] = `./testy/runtime`
+        }
+        if (flags['-d'] != null) {
+            if (DEBUG) console.log(`Podano ${flags['-d']} jako ścieżkę do testów`)
+            settings['test_dir'] =flags['-d'];
+        } else {
+            if (DEBUG) console.log(`Brak podanej ścieżki: usatwiam "."`)
+            settings['test_dir'] = `.`
+        }
         try {
-            let dirs = ['./testy', './testy/runtime', './testy/niepoprawne/', './testy/runtime/in', './testy/runtime/out', './testy/runtime/mout',
-                './testy/niepoprawne/in', './testy/niepoprawne/out', './testy/niepoprawne/mout', `${settings['test_dir']}/mout`]
+            dir = await fs_p.opendir(`${settings['test_dir']}/in`);
+            dir3 = await fs_p.opendir(`${settings['test_dir']}/in`);
+            dir2 = await fs_p.opendir(`${settings['test_dir']}/out`);
+            for await (const dirent of dir) {
+                let ch = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+                let name = dirent.name;
+                for (let i = 0; i < ch.length; i++) {
+                    name = name.split(ch[i]).join('*')
+                }
+                name = name.split('*');
+                test_settings['prefix'] = name[0];
+                test_settings['in_ext'] = name[name.length - 1];
+                console.log(`Ustawiam prefix i sufix wejścia na podstawie ${dirent.name}: ${test_settings['prefix']}???${test_settings['in_ext']}`)
+                break;
+            }
+            for await (const dirent of dir3) {
+                let num = dirent.name;
+                if (test_settings['prefix']) {
+                    num = num.split(test_settings['prefix'])[1]
+                }
+                if (test_settings['in_ext']) {
+                    num = num.split(test_settings['in_ext'])[0];
+                }
+                task_queue.push(parseInt(num))
+            }
+            for await (const dirent of dir2) {
+                let ch = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+                let name = dirent.name;
+                for (let i = 0; i < ch.length; i++) {
+                    name = name.split(ch[i]).join('*')
+                }
+                name = name.split('*');
+                test_settings['out_ext'] = name[name.length - 1];
+                console.log(`Ustawiam prefix i sufix wyjścia na podstawie ${dirent.name}: ${test_settings['prefix']}???${test_settings['out_ext']}`)
+                break;
+            }
+        } catch (err) {
+            if (DEBUG) console.error(err);
+            console.log(`❌ Nie można znaleść scieżki ${err.path} Kończę`)
+            process.exit(1);
+        }
+        try {
+            let dirs = [`${settings['test_dir']}/mout`]
             for (let i = 0; i < dirs.length; i++) {
                 await createPath(dirs[i]);
                 await new Promise(resolve => setTimeout(resolve, 10));
@@ -141,25 +218,17 @@ module.exports = {
             console.log("Wystąpił błąd:")
             console.log(e)
         }
-        if (settings['threads'] < 0) {
-            console.log('Nie podano poprawnej wartości dla "threads", ustawiam na 1')
-            settings['threads'] = 1
-        }
-        if (settings['program'] == undefined) {
-            console.log(`Niepoprawna wartość dla "program", zatrzymuję sprawdzarkę!`)
-            return -1;
-        }
-
-        if (settings['download'] == true) {
-            settings['test_dir'] = `./testy/runtime`
-        }
-        if (settings['test_dir'][settings['test_dir'].length - 1] == "/") {
-            settings['test_dir'] = settings['test_dir'].substring(0, settings['test_dir'].length - 1)
+        if (settings['use_oiejq'] == true) {
+            var uid = parseInt(process.env.SUDO_UID);
+            if (!uid) {
+                console.log("Not A root")
+                process.exit(1);
+            }
         }
         return data;
     },
     init_tests: async function () {
-        try {
+        /* try {
             const a = await fs_p.readFile("test_settings.json", "utf8")
             data = JSON.parse(a);
             test_settings = data;
@@ -179,7 +248,7 @@ module.exports = {
         if (settings['download'] == true)
             if (test_settings['url'][test_settings['url'].length - 1] == "/") {
                 test_settings['url'] = test_settings['url'].substring(0, test_settings['url'].length - 1)
-            }
+            } */
     },
     init_threads: async function () {
         for (var i = 0; i < settings['threads']; i++) {

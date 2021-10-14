@@ -5,9 +5,9 @@ mkdir -p ./log
 cp thread.sh thread
 chmod 775 thread
 #kompilacja programów
-g++ $1 -o "./bin/${$}_a" -std=c++17
-g++ $2 -o "./bin/${$}_b" -std=c++17
-g++ $3 -o "./bin/${$}_c" -std=c++17
+g++ $1 -o "./bin/${$}_a" -std=c++17 -O3
+g++ $2 -o "./bin/${$}_b" -std=c++17 -O3
+g++ $3 -o "./bin/${$}_c" -std=c++17 -O3
 #domyślnie liczba wątków = 1
 if [ -z "$4" ]; then 
     th=1

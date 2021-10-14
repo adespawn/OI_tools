@@ -35,7 +35,7 @@ fi
 
 TMPFILE="$(mktemp)"
 
-"$SELF_DIR/sio2jail" -f 3 -o oiaug $OPTS -- "$@" 3>"$TMPFILE"
+"/var/tester/src/sio2jail" -f 3 -o oiaug $OPTS -- "$@" 3>"$TMPFILE"
 
 read STATUS CODE TIME NVM MEM SYSC <"$TMPFILE"
 

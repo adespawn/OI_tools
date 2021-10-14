@@ -19,6 +19,7 @@
   "homepage": "https://github.com/adespawn/online_tester#readme",
   "dependencies": {
     "axios": "^0.21.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "sudo-prompt": "^9.2.1"
   }
 }

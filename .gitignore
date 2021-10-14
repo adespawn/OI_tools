@@ -140,3 +140,8 @@ tools/backup/server/PRIV.key
 tools/backup/client/PUB.key
 tools/project/1/
 tools/project/2/
+tools/NCDiff/usrSrc/a.cpp
+tools/NCDiff/usrSrc/b.cpp
+tools/NCDiff/usrSrc/c.cpp
+tools/NCDiff/usrSrc/d.cpp
+tools/tester/TDR

@@ -1,6 +1,6 @@
 echo "Rozpoczyn porównywanie, wątek ${3} z ${2}"
 echo "PID:${1}"
-for i in $(bash -c "echo {${3}..10000000..${2}}"); do
+for i in $(bash -c "echo {${3}..1000000..${2}}"); do
     #generowanie testu
     ./bin/${1}_c $i >./out/${1}_${i}.in
     #wykonywanie testu na danych programach
