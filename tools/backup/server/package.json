@@ -9,7 +9,7 @@
   "author": "adespawn",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bcrypt": "^5.0.0",
     "content-disposition": "^0.5.3",
     "express": "^4.17.1",
