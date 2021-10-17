@@ -7,4 +7,10 @@ Narzędzie do porówywania swojego rozwiązania względem przygotowanych testów
 # Jak używać:
 - Przed pierwszym uruchomieniem należy uruchomić plik first_launch 
 ( ``sh first_launch.sh`` ) w celu instalacji oraz kompilacji poszczególnych fragmentow sprawdzarki
-- Aby przetestować program należy uruchomić ``sh RUN_ME.sh`` (lub ``npm start``). Program bazuje na podstawie ustawień : Plik ``settings.json`` odpowiada za ustawienia personalne, natomiast plik ``task_settings.json`` odpowiada za ustawienia paczki testów. Pliki ustawień zostaną automatycznie wygengerowane przy pierwszym uruchomieniu sprawdzarki
+- Należy dostosować ustawienia programu w pliku ``/var/tester/settings.json``
+- Po instalacji należy wywołać komędę ``tester`` w celu rozpoczęcia testowania. Program automatycznie wykryje testy i zacznie sprawdzanie
+
+# Flagi programu
+- ``-d`` - ścieżka do testów (miejsce gdzie znajdują się folderi ./in i ./out)
+- ``-b`` - ścieżka do skompliowanego rozwiązania (domyślnie ``a.out``)
+- ``-c`` - ścieżka do kodu źródłowego rozwiązania (domyślnie brak). Flaga ta nie może być równolegle użyta z ``-b``

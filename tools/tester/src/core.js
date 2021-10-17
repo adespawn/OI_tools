@@ -159,6 +159,17 @@ module.exports = {
         if (settings['download'] == true) {
             settings['test_dir'] = `./testy/runtime`
         }
+        if(flags['-b']!=null){
+            settings['program'] =flags['-b'];
+        }
+        if(flags['-c']!=null){
+            if(flags['-b']!=null){
+                console.log("❌ Podano równocześne flagę -b jak i -c");
+                process.exit(1);
+            }
+            await run.compile(flags['-c']);
+            run.revoke_perms('./a.out',false)
+        }
         if (flags['-d'] != null) {
             if (DEBUG) console.log(`Podano ${flags['-d']} jako ścieżkę do testów`)
             settings['test_dir'] =flags['-d'];

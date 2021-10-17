@@ -38,5 +38,8 @@ module.exports = {
             let command=`chmod 766${(is_dir)?' -R':''} ${dir}`
             await exec(command)
         }
+    },
+    compile: async function(file){
+        const  stdout  = await exec(`g++ ${file} -O3 -static`);
     }
 }
