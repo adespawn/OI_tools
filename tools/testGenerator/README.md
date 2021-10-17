@@ -1,5 +1,5 @@
 # Test Genereator
-Generuje paczki testó
+Generuje paczki testów
 ## Użycie
-``sh index.js program.cpp generatorTestów.cpp liczba_testów``
+``sh index.sh program.cpp generatorTestów.cpp liczba_testów liczba_wątków``
 testy zostaną umieszczone w folderze ./paczki/procesID

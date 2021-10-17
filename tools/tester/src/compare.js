@@ -3,7 +3,7 @@ const execFile = util.promisify(require('child_process').exec);
 module.exports = {
 compare : async function(f1,f2,id){
     try {
-        com_command=`./src/compare ${f1} ${f2} ${id}`
+        com_command=`/var/tester/src/compare ${f1} ${f2} ${id}`
         const {stdout} = await execFile(com_command);
         if(stdout.length > 1){
             console.log(stdout)
