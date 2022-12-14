@@ -12,7 +12,7 @@
     "axios": "^0.21.2",
     "bcrypt": "^5.0.0",
     "content-disposition": "^0.5.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
     "moment": "^2.29.1",
